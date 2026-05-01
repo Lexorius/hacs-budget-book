@@ -12,10 +12,11 @@ dependencies, no JavaScript, fully self-contained.
 - 📊 **HTML reports with embedded SVG charts** — printable, no JS required
 - 🗓️ **Automatic monthly & yearly generation** (1st of the following period)
 - ⚙️ **Fully UI-configurable** via Config Flow + Options Flow
+- ✍️ **Manual meter entry** — per meter; an input entity (`number.*`) and a consumption sensor (`sensor.*`) are created automatically, no YAML required
 - 💰 **Cost calculation** with price per unit + monthly base fee
 - 🎨 **Per-meter customization**: name, unit, icon/emoji, color
 - 📁 **Reports served at** `/local/haushaltsdoku/`
-- 🛠️ **Services** for monthly, yearly, and custom date ranges
+- 🛠️ **Services** for monthly/yearly/range reports and adding manual readings
 - 🌍 **Languages**: German, English (switchable in settings)
 - 🌙 **Dark mode** automatic via `prefers-color-scheme`
 
@@ -107,6 +108,17 @@ data:
   title: "April vacation week"
 ```
 
+### `haushaltsdoku.add_reading`
+
+Add a new reading for a manual meter:
+
+```yaml
+service: haushaltsdoku.add_reading
+data:
+  meter_name: "Cold water"
+  value: 1234.567
+```
+
 ## Example automation: monthly notification
 
 ```yaml
@@ -131,28 +143,50 @@ automation:
 
 ## Manual meters
 
-If you read your meters by hand:
+When adding a meter in the wizard, tick **Manual meter**. No existing sensor
+or template needed — Haushaltsdoku auto-creates:
+
+- `number.haushaltsdoku_<name>_input` — the input field. Drop it in any
+  Lovelace `entities` card to enter readings directly in the HA UI.
+- `sensor.haushaltsdoku_<name>` — the consumption sensor (with
+  `state_class: total_increasing` and proper `device_class`). Goes into
+  long-term statistics automatically; usable in the Energy Dashboard and
+  our reports.
+
+Example Lovelace card for entry (on a dedicated "Meter readings" dashboard):
 
 ```yaml
-# configuration.yaml
-input_number:
-  water_cold:
-    name: "Cold water — reading in m³"
-    min: 0
-    max: 100000
-    step: 0.001
-    mode: box
-
-template:
-  - sensor:
-      - name: "Water meter cold"
-        unit_of_measurement: "m³"
-        device_class: water
-        state_class: total_increasing
-        state: "{{ states('input_number.water_cold') | float(0) }}"
+type: entities
+title: Enter meter readings
+entities:
+  - entity: number.haushaltsdoku_water_cold_input
+    name: Cold water — new reading
+  - entity: sensor.haushaltsdoku_water_cold
+    name: current reading
+    secondary_info: last-changed
+  - entity: number.haushaltsdoku_electricity_main_input
+  - entity: sensor.haushaltsdoku_electricity_main
 ```
 
-Then add `sensor.water_meter_cold` as a meter in Haushaltsdoku.
+### Entry via service / automation
+
+From an automation or a notification action:
+
+```yaml
+service: haushaltsdoku.add_reading
+data:
+  meter_name: "Cold water"
+  value: 1234.567
+  # optional: timestamp: "2026-04-30 22:00:00"
+```
+
+Use `meter_name` (display name) or `meter_id` (internal UUID).
+
+### Plausibility check
+
+If a new reading is lower than the previous one, a warning is logged but the
+entry is still stored (corner cases like meter replacements need that). Fix
+incorrect values via *Developer Tools → Statistics → Adjust a statistic*.
 
 ## What the integration creates
 

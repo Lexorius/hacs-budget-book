@@ -13,12 +13,31 @@
         }
       },
       "add_meter": {
-        "title": "Add a meter",
-        "description": "Added so far: {count}",
+        "title": "Choose meter type",
+        "description": "Added so far: {count}\n\nManual: enter readings yourself. Haushaltsdoku creates an input entity (number.*) and a sensor (sensor.*).\n\nAutomatic: use an existing sensor (Shelly, ESPHome, Tasmota …).",
+        "data": {"manual": "Manual meter (entered by hand)"}
+      },
+      "meter_auto": {
+        "title": "Add meter — Automatic",
+        "description": "Pick the sensor that provides the meter reading.",
         "data": {
           "name": "Display name",
-          "entity_id": "Sensor / input_number entity",
+          "entity_id": "Sensor entity",
           "unit": "Unit (kWh, m³, L …)",
+          "price_per_unit": "Price per unit (optional)",
+          "base_fee_monthly": "Monthly base fee (optional)",
+          "icon": "Icon / emoji (optional)",
+          "color": "Color (hex, optional)"
+        }
+      },
+      "meter_manual": {
+        "title": "Add meter — Manual",
+        "description": "Haushaltsdoku will automatically create an input entity and a consumption sensor.",
+        "data": {
+          "name": "Display name (e.g. Cold water)",
+          "unit": "Unit (kWh, m³, L …)",
+          "max_value": "Maximum meter value",
+          "step": "Step size",
           "price_per_unit": "Price per unit (optional)",
           "base_fee_monthly": "Monthly base fee (optional)",
           "icon": "Icon / emoji (optional)",
@@ -28,24 +47,41 @@
       "menu": {
         "title": "Add another meter?",
         "description": "Configured ({count}): {names}",
-        "data": { "action": "Action" }
+        "data": {"action": "Action"}
       }
     },
-    "abort": { "already_configured": "Haushaltsdoku is already set up." }
+    "abort": {"already_configured": "Haushaltsdoku is already set up."}
   },
   "options": {
     "step": {
       "init": {
         "title": "Configure Haushaltsdoku",
         "description": "Current meters:\n{meters}",
-        "data": { "action": "What do you want to do?" }
+        "data": {"action": "What do you want to do?"}
       },
       "add_meter": {
-        "title": "Add meter",
+        "title": "Choose meter type",
+        "data": {"manual": "Manual meter (entered by hand)"}
+      },
+      "meter_auto": {
+        "title": "Meter — Automatic",
         "data": {
           "name": "Display name",
-          "entity_id": "Entity",
+          "entity_id": "Sensor entity",
           "unit": "Unit",
+          "price_per_unit": "Price per unit",
+          "base_fee_monthly": "Monthly base fee",
+          "icon": "Icon / emoji",
+          "color": "Color (hex)"
+        }
+      },
+      "meter_manual": {
+        "title": "Meter — Manual",
+        "data": {
+          "name": "Display name",
+          "unit": "Unit",
+          "max_value": "Maximum meter value",
+          "step": "Step size",
           "price_per_unit": "Price per unit",
           "base_fee_monthly": "Monthly base fee",
           "icon": "Icon / emoji",
@@ -54,7 +90,7 @@
       },
       "remove_meter": {
         "title": "Remove meter",
-        "data": { "meter": "Which meter to remove?" }
+        "data": {"meter": "Which meter to remove?"}
       },
       "global": {
         "title": "Global settings",
@@ -80,6 +116,10 @@
     "generate_range_report": {
       "name": "Generate range report",
       "description": "Create a report for a custom date range."
+    },
+    "add_reading": {
+      "name": "Add meter reading",
+      "description": "Adds a new reading for a manual meter."
     }
   }
 }

@@ -12,6 +12,9 @@ CONF_METER_PRICE = "price_per_unit"
 CONF_METER_BASE_FEE = "base_fee_monthly"
 CONF_METER_ICON = "icon"
 CONF_METER_COLOR = "color"
+CONF_METER_MANUAL = "manual"
+CONF_METER_MAX = "max_value"
+CONF_METER_STEP = "step"
 
 CONF_OUTPUT_DIR = "output_dir"
 CONF_AUTO_MONTHLY = "auto_monthly"
@@ -27,6 +30,14 @@ DEFAULT_LANGUAGE = "de"
 SERVICE_GENERATE_MONTHLY = "generate_monthly_report"
 SERVICE_GENERATE_YEARLY = "generate_yearly_report"
 SERVICE_GENERATE_RANGE = "generate_range_report"
+SERVICE_ADD_READING = "add_reading"
+
+# Storage
+STORAGE_VERSION = 1
+STORAGE_KEY_FMT = "haushaltsdoku.{entry_id}.readings"
+
+# Entity-ID prefix for auto-created manual entities
+MANUAL_SENSOR_PREFIX = "haushaltsdoku"
 
 # Default colors per common type
 DEFAULT_COLORS = {

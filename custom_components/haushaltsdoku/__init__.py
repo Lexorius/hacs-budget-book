@@ -10,25 +10,33 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.event import async_track_time_change
 
 from .const import (
     DOMAIN,
+    CONF_METERS,
+    CONF_METER_ENTITY,
+    CONF_METER_MANUAL,
+    CONF_METER_NAME,
     CONF_OUTPUT_DIR,
     CONF_AUTO_MONTHLY,
     CONF_AUTO_YEARLY,
     DEFAULT_OUTPUT_DIR,
+    MANUAL_SENSOR_PREFIX,
+    SERVICE_ADD_READING,
     SERVICE_GENERATE_MONTHLY,
     SERVICE_GENERATE_YEARLY,
     SERVICE_GENERATE_RANGE,
 )
 from .coordinator import HaushaltsdokuCoordinator
 from .report_generator import ReportGenerator
+from .storage import ReadingStore
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: list[Platform] = [Platform.SENSOR]
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.NUMBER]
 
 SERVICE_GENERATE_RANGE_SCHEMA = vol.Schema(
     {
@@ -51,6 +59,30 @@ SERVICE_GENERATE_YEAR_SCHEMA = vol.Schema(
     }
 )
 
+SERVICE_ADD_READING_SCHEMA = vol.Schema(
+    vol.All(
+        {
+            vol.Optional("meter_id"): cv.string,
+            vol.Optional("meter_name"): cv.string,
+            vol.Required("value"): vol.Coerce(float),
+            vol.Optional("timestamp"): cv.datetime,
+        },
+        cv.has_at_least_one_key("meter_id", "meter_name"),
+    )
+)
+
+
+def _slug(name: str) -> str:
+    return (
+        name.lower()
+        .replace(" ", "_")
+        .replace("-", "_")
+        .replace("ä", "ae")
+        .replace("ö", "oe")
+        .replace("ü", "ue")
+        .replace("ß", "ss")
+    )
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Haushaltsdoku from a config entry."""
@@ -62,31 +94,52 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     output_path = Path(hass.config.path(output_dir))
     output_path.mkdir(parents=True, exist_ok=True)
 
-    coordinator = HaushaltsdokuCoordinator(hass, entry)
+    # Storage für manuelle Eingaben
+    store = ReadingStore(hass, entry.entry_id)
+    await store.async_load()
+
+    # Bei manuellen Zählern entity_id automatisch auf den selbst-erzeugten
+    # Sensor zeigen lassen.
+    meters = list(
+        entry.options.get(CONF_METERS, entry.data.get(CONF_METERS, []))
+    )
+    needs_save = False
+    for meter in meters:
+        if meter.get(CONF_METER_MANUAL) and not meter.get(CONF_METER_ENTITY):
+            meter[CONF_METER_ENTITY] = (
+                f"sensor.{MANUAL_SENSOR_PREFIX}_{_slug(meter[CONF_METER_NAME])}"
+            )
+            needs_save = True
+    if needs_save:
+        new_options = dict(entry.options)
+        new_options[CONF_METERS] = meters
+        hass.config_entries.async_update_entry(entry, options=new_options)
+
+    coordinator = HaushaltsdokuCoordinator(hass, entry, store)
     generator = ReportGenerator(hass, entry, coordinator, output_path)
 
     hass.data[DOMAIN][entry.entry_id] = {
         "coordinator": coordinator,
         "generator": generator,
+        "store": store,
         "output_path": output_path,
         "unsub_listeners": [],
     }
 
-    # Services registrieren (nur einmal global)
     if not hass.services.has_service(DOMAIN, SERVICE_GENERATE_MONTHLY):
         await _register_services(hass)
 
-    # Auto-Generation: jeden 1. eines Monats um 00:05 Uhr läuft die Monatsauswertung
-    # für den Vormonat
     if entry.options.get(CONF_AUTO_MONTHLY, True):
         unsub = async_track_time_change(
-            hass, _make_monthly_callback(hass, entry.entry_id), hour=0, minute=5, second=0
+            hass, _make_monthly_callback(hass, entry.entry_id),
+            hour=0, minute=5, second=0,
         )
         hass.data[DOMAIN][entry.entry_id]["unsub_listeners"].append(unsub)
 
     if entry.options.get(CONF_AUTO_YEARLY, True):
         unsub = async_track_time_change(
-            hass, _make_yearly_callback(hass, entry.entry_id), hour=0, minute=15, second=0
+            hass, _make_yearly_callback(hass, entry.entry_id),
+            hour=0, minute=15, second=0,
         )
         hass.data[DOMAIN][entry.entry_id]["unsub_listeners"].append(unsub)
 
@@ -101,7 +154,6 @@ def _make_monthly_callback(hass: HomeAssistant, entry_id: str):
     async def _cb(now: datetime) -> None:
         if now.day != 1:
             return
-        # Vormonat
         last = now - timedelta(days=1)
         gen: ReportGenerator = hass.data[DOMAIN][entry_id]["generator"]
         await gen.generate_monthly(last.year, last.month)
@@ -144,6 +196,40 @@ async def _register_services(hass: HomeAssistant) -> None:
             gen: ReportGenerator = data["generator"]
             await gen.generate_range(start, end, title=title)
 
+    async def _handle_add_reading(call: ServiceCall) -> None:
+        meter_id = call.data.get("meter_id")
+        meter_name = call.data.get("meter_name")
+        value = call.data["value"]
+        timestamp = call.data.get("timestamp")
+
+        for entry_id, data in hass.data[DOMAIN].items():
+            coordinator: HaushaltsdokuCoordinator = data["coordinator"]
+            target_meter = None
+            for meter in coordinator.meters:
+                if meter_id and meter.get("id") == meter_id:
+                    target_meter = meter
+                    break
+                if meter_name and meter.get(CONF_METER_NAME) == meter_name:
+                    target_meter = meter
+                    break
+            if target_meter:
+                if not target_meter.get(CONF_METER_MANUAL):
+                    raise ServiceValidationError(
+                        f"Zähler '{target_meter[CONF_METER_NAME]}' ist nicht "
+                        "als manueller Zähler konfiguriert."
+                    )
+                await coordinator.async_add_reading(
+                    target_meter["id"], value, timestamp
+                )
+                _LOGGER.info(
+                    "Reading hinzugefügt: %s = %s",
+                    target_meter[CONF_METER_NAME], value,
+                )
+                return
+        raise ServiceValidationError(
+            f"Kein manueller Zähler gefunden (id={meter_id}, name={meter_name})"
+        )
+
     hass.services.async_register(
         DOMAIN, SERVICE_GENERATE_MONTHLY, _handle_monthly,
         schema=SERVICE_GENERATE_MONTH_SCHEMA,
@@ -155,6 +241,10 @@ async def _register_services(hass: HomeAssistant) -> None:
     hass.services.async_register(
         DOMAIN, SERVICE_GENERATE_RANGE, _handle_range,
         schema=SERVICE_GENERATE_RANGE_SCHEMA,
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_ADD_READING, _handle_add_reading,
+        schema=SERVICE_ADD_READING_SCHEMA,
     )
 
 
@@ -170,9 +260,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         data = hass.data[DOMAIN].pop(entry.entry_id, {})
         for unsub in data.get("unsub_listeners", []):
             unsub()
-        # Falls letzte Entry: Services entfernen
         if not hass.data[DOMAIN]:
-            for svc in (SERVICE_GENERATE_MONTHLY, SERVICE_GENERATE_YEARLY, SERVICE_GENERATE_RANGE):
+            for svc in (
+                SERVICE_GENERATE_MONTHLY,
+                SERVICE_GENERATE_YEARLY,
+                SERVICE_GENERATE_RANGE,
+                SERVICE_ADD_READING,
+            ):
                 if hass.services.has_service(DOMAIN, svc):
                     hass.services.async_remove(DOMAIN, svc)
     return unload_ok

@@ -1,7 +1,7 @@
 {
   "domain": "haushaltsdoku",
   "name": "Haushaltsdoku",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "documentation": "https://github.com/yourname/haushaltsdoku",
   "issue_tracker": "https://github.com/yourname/haushaltsdoku/issues",
   "codeowners": ["@yourname"],

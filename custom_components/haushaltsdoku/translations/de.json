@@ -13,41 +13,60 @@
         }
       },
       "add_meter": {
-        "title": "Zähler hinzufügen",
-        "description": "Bisher hinzugefügt: {count}",
+        "title": "Zählertyp wählen",
+        "description": "Bisher hinzugefügt: {count}\n\nManuell: Du trägst Stände selbst ein. Haushaltsdoku erstellt eine Eingabe-Entity (number.*) und einen Sensor (sensor.*).\n\nAutomatisch: Vorhandenen Sensor verwenden (Shelly, ESPHome, Tasmota …).",
         "data": {
-          "name": "Anzeigename (z.B. Strom Hauptzähler)",
-          "entity_id": "Sensor / Input-Number Entity",
+          "manual": "Manueller Zähler (Eingabe per Hand)"
+        }
+      },
+      "meter_auto": {
+        "title": "Zähler hinzufügen — Automatisch",
+        "description": "Wähle den Sensor, der den Zählerstand liefert.",
+        "data": {
+          "name": "Anzeigename",
+          "entity_id": "Sensor-Entity",
           "unit": "Einheit (kWh, m³, L …)",
           "price_per_unit": "Preis pro Einheit (optional)",
           "base_fee_monthly": "Grundgebühr / Monat (optional)",
-          "icon": "Icon / Emoji (optional, z.B. ⚡ 💧 🔥)",
-          "color": "Farbe als Hex (optional, z.B. #f59e0b)"
+          "icon": "Icon / Emoji (optional)",
+          "color": "Farbe als Hex (optional)"
+        }
+      },
+      "meter_manual": {
+        "title": "Zähler hinzufügen — Manuell",
+        "description": "Haushaltsdoku erstellt automatisch eine Eingabe-Entity und einen Verbrauchssensor.",
+        "data": {
+          "name": "Anzeigename (z.B. Wasser kalt)",
+          "unit": "Einheit (kWh, m³, L …)",
+          "max_value": "Maximaler Zählerstand",
+          "step": "Schrittweite",
+          "price_per_unit": "Preis pro Einheit (optional)",
+          "base_fee_monthly": "Grundgebühr / Monat (optional)",
+          "icon": "Icon / Emoji (optional)",
+          "color": "Farbe als Hex (optional)"
         }
       },
       "menu": {
         "title": "Weiteren Zähler hinzufügen?",
         "description": "Bereits konfiguriert ({count}): {names}",
-        "data": {
-          "action": "Aktion"
-        }
+        "data": {"action": "Aktion"}
       }
     },
-    "abort": {
-      "already_configured": "Haushaltsdoku ist bereits eingerichtet."
-    }
+    "abort": {"already_configured": "Haushaltsdoku ist bereits eingerichtet."}
   },
   "options": {
     "step": {
       "init": {
         "title": "Haushaltsdoku konfigurieren",
         "description": "Aktuelle Zähler:\n{meters}",
-        "data": {
-          "action": "Was möchtest du tun?"
-        }
+        "data": {"action": "Was möchtest du tun?"}
       },
       "add_meter": {
-        "title": "Zähler hinzufügen",
+        "title": "Zählertyp wählen",
+        "data": {"manual": "Manueller Zähler (Eingabe per Hand)"}
+      },
+      "meter_auto": {
+        "title": "Zähler — Automatisch",
         "data": {
           "name": "Anzeigename",
           "entity_id": "Sensor-Entity",
@@ -58,11 +77,22 @@
           "color": "Farbe (Hex)"
         }
       },
+      "meter_manual": {
+        "title": "Zähler — Manuell",
+        "data": {
+          "name": "Anzeigename",
+          "unit": "Einheit",
+          "max_value": "Maximaler Zählerstand",
+          "step": "Schrittweite",
+          "price_per_unit": "Preis pro Einheit",
+          "base_fee_monthly": "Grundgebühr / Monat",
+          "icon": "Icon / Emoji",
+          "color": "Farbe (Hex)"
+        }
+      },
       "remove_meter": {
         "title": "Zähler entfernen",
-        "data": {
-          "meter": "Welchen Zähler entfernen?"
-        }
+        "data": {"meter": "Welchen Zähler entfernen?"}
       },
       "global": {
         "title": "Globale Einstellungen",
@@ -88,6 +118,10 @@
     "generate_range_report": {
       "name": "Zeitraum-Bericht erzeugen",
       "description": "Erstellt einen Bericht für einen freien Zeitraum."
+    },
+    "add_reading": {
+      "name": "Zählerstand eintragen",
+      "description": "Trägt einen neuen Zählerstand für einen manuellen Zähler ein."
     }
   }
 }

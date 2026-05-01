@@ -27,7 +27,6 @@ generate_yearly_report:
   fields:
     year:
       name: Jahr
-      description: Jahr (z.B. 2025). Standard ist das aktuelle Jahr.
       example: 2025
       selector:
         number:
@@ -41,19 +40,48 @@ generate_range_report:
   fields:
     start:
       name: Startzeitpunkt
-      description: Anfang des Zeitraums.
       required: true
       selector:
         datetime:
     end:
       name: Endzeitpunkt
-      description: Ende des Zeitraums.
       required: true
       selector:
         datetime:
     title:
       name: Titel
-      description: Optionaler Titel für den Bericht.
       example: Urlaub Sommer 2025
       selector:
         text:
+
+add_reading:
+  name: Zählerstand eintragen
+  description: >-
+    Trägt einen neuen Zählerstand für einen manuellen Zähler ein.
+  fields:
+    meter_name:
+      name: Zähler-Name
+      description: Name des Zählers wie in der Konfiguration.
+      example: "Wasser Haushalt"
+      selector:
+        text:
+    meter_id:
+      name: Zähler-ID
+      description: Alternativ die interne ID (UUID) des Zählers.
+      selector:
+        text:
+    value:
+      name: Neuer Stand
+      description: Der abgelesene Zählerstand.
+      required: true
+      example: 12345.678
+      selector:
+        number:
+          min: 0
+          step: 0.001
+          mode: box
+    timestamp:
+      name: Zeitpunkt
+      description: Zeitpunkt der Ablesung. Standard ist jetzt.
+      selector:
+        datetime:

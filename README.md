@@ -15,10 +15,11 @@ Englisch** generierbar.
 - 📊 **HTML-Berichte mit eingebetteten SVG-Charts** — keine externen Dependencies, kein JavaScript, druckbar
 - 🗓️ **Automatische monatliche & jährliche Generierung** (jeweils am 1. des Folgezeitraums)
 - ⚙️ **Komplett über die UI konfigurierbar** — Config Flow + Options Flow
+- ✍️ **Manuelle Zähler-Eingabe** — pro Zähler wählbar; Eingabe-Entity (`number.*`) und Verbrauchssensor (`sensor.*`) werden automatisch erstellt, kein YAML-Bastelei nötig
 - 💰 **Kostenkalkulation** mit Preis pro Einheit + monatlicher Grundgebühr
 - 🎨 **Pro Zähler anpassbar**: Name, Einheit, Icon/Emoji, Farbe
 - 📁 **Berichte direkt erreichbar** unter `/local/haushaltsdoku/`
-- 🛠️ **Services** für manuelle Generierung von Monats-, Jahres- oder freien Zeitraum-Berichten
+- 🛠️ **Services** für manuelle Generierung & Eintrag von Zählerständen
 - 🌍 **Sprachen**: Deutsch, Englisch (umschaltbar in den Einstellungen)
 - 🌙 **Dark Mode** automatisch (via `prefers-color-scheme`)
 
@@ -112,6 +113,17 @@ data:
   title: "Urlaubswoche April"
 ```
 
+### `haushaltsdoku.add_reading`
+
+Trägt für einen manuellen Zähler einen neuen Stand ein:
+
+```yaml
+service: haushaltsdoku.add_reading
+data:
+  meter_name: "Wasser kalt"
+  value: 1234.567
+```
+
 ## Beispielautomation: Monatlicher Push mit Bericht
 
 ```yaml
@@ -136,28 +148,56 @@ automation:
 
 ## Manuelle Zähler
 
-Wenn du deinen Stand selbst einträgst:
+Beim Hinzufügen eines Zählers im Wizard kannst du **Manueller Zähler** anhaken.
+Dann brauchst du keinen vorhandenen Sensor und keinen Template-Sensor —
+Haushaltsdoku erstellt automatisch:
+
+- `number.haushaltsdoku_<name>_input` — das Eingabefeld (Zahl). Diese
+  Entity in einer normalen Lovelace `entities`-Karte ablegen, fertig: das
+  Eintragen passiert direkt in der HA-UI.
+- `sensor.haushaltsdoku_<name>` — der Verbrauchszähler (mit
+  `state_class: total_increasing` und passender `device_class`). Wird
+  automatisch in den Long-Term-Statistics erfasst und ist im Energie-Dashboard
+  sowie in unseren Berichten verwendbar.
+
+Beispiel-Lovelace-Karte für die Eingabe (auf einem dedizierten Dashboard
+"Zählerstände"):
 
 ```yaml
-# configuration.yaml
-input_number:
-  wasser_kalt:
-    name: "Wasser kalt — Stand in m³"
-    min: 0
-    max: 100000
-    step: 0.001
-    mode: box
-
-template:
-  - sensor:
-      - name: "Wasserzähler kalt"
-        unit_of_measurement: "m³"
-        device_class: water
-        state_class: total_increasing
-        state: "{{ states('input_number.wasser_kalt') | float(0) }}"
+type: entities
+title: Zählerstände eintragen
+entities:
+  - entity: number.haushaltsdoku_wasser_kalt_input
+    name: Wasser kalt — neuer Stand
+  - entity: sensor.haushaltsdoku_wasser_kalt
+    name: aktueller Stand
+    secondary_info: last-changed
+  - entity: number.haushaltsdoku_strom_haupt_input
+  - entity: sensor.haushaltsdoku_strom_haupt
 ```
 
-Diesen `sensor.wasserzaehler_kalt` dann in Haushaltsdoku als Zähler eintragen.
+### Eintrag per Service / Automation
+
+Aus einer Automation oder einer Push-Notification-Action heraus:
+
+```yaml
+service: haushaltsdoku.add_reading
+data:
+  meter_name: "Wasser kalt"
+  value: 1234.567
+  # optional: timestamp: "2026-04-30 22:00:00"
+```
+
+`meter_name` muss exakt dem Anzeigenamen aus der Konfiguration entsprechen;
+alternativ kann `meter_id` (interne UUID, in den Options sichtbar) verwendet
+werden.
+
+### Plausibilitätscheck
+
+Wenn ein neuer Stand kleiner als der letzte ist, wird das im HA-Log als
+Warnung geloggt — der Eintrag wird trotzdem gespeichert (Edge-Cases wie
+Zählerwechsel sind sonst nicht abbildbar). Falsche Werte korrigierst du
+über *Entwicklungswerkzeuge → Statistik → Statistik anpassen*.
 
 ## Konfigurations-Beispiel (Result)
 
