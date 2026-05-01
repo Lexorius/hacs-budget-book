@@ -8,6 +8,12 @@ SVG-Charts, Datentabelle, Kostenkalkulation und druckfähigem Layout. Dunkel- un
 Helldarstellung wird automatisch erkannt. Berichte sind in **Deutsch oder
 Englisch** generierbar.
 
+> **Hinweis:** Das Repository heißt `hacs-budget-book`, die Integration in HA
+> registriert sich aber unter dem Domain-Namen `haushaltsdoku` — das ist
+> Absicht und ändert nichts an der Funktionalität.
+
+**Autor:** [Lexorius](https://github.com/Lexorius) (Thomas Kloppholz)
+
 ![Berichts-Beispiel](docs/screenshot.png)
 
 ## Features
@@ -42,7 +48,7 @@ legen — siehe [Manuelle Zähler](#manuelle-zähler).
 ### Via HACS (empfohlen)
 
 1. HACS öffnen → drei Punkte oben rechts → **Custom Repositories**
-2. URL: `https://github.com/yourname/haushaltsdoku`, Kategorie: **Integration**
+2. URL: `https://github.com/Lexorius/hacs-budget-book`, Kategorie: **Integration**
 3. Hinzufügen → installieren → **Home Assistant neu starten**
 4. Einstellungen → Geräte & Dienste → **Integration hinzufügen** → "Haushaltsdoku"
 
@@ -50,8 +56,8 @@ legen — siehe [Manuelle Zähler](#manuelle-zähler).
 
 ```bash
 cd /config
-git clone https://github.com/yourname/haushaltsdoku
-cp -r haushaltsdoku/custom_components/haushaltsdoku custom_components/
+git clone https://github.com/Lexorius/hacs-budget-book
+cp -r hacs-budget-book/custom_components/haushaltsdoku custom_components/
 ```
 
 dann Home Assistant neu starten.

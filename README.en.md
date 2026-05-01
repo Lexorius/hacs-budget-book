@@ -7,6 +7,12 @@ A HACS-compatible custom integration that turns your sensor data into
 cards, SVG charts, data tables, cost calculation, and dark mode. No external
 dependencies, no JavaScript, fully self-contained.
 
+> **Note:** The repository is named `hacs-budget-book`, but the integration
+> registers itself in HA under the domain `haushaltsdoku` — by design,
+> doesn't affect anything.
+
+**Author:** [Lexorius](https://github.com/Lexorius) (Thomas Kloppholz)
+
 ## Features
 
 - 📊 **HTML reports with embedded SVG charts** — printable, no JS required
@@ -40,7 +46,7 @@ template sensor that has `state_class: total_increasing` — see
 ### Via HACS (recommended)
 
 1. Open HACS → 3-dot menu → **Custom Repositories**
-2. URL: `https://github.com/yourname/haushaltsdoku`, Category: **Integration**
+2. URL: `https://github.com/Lexorius/hacs-budget-book`, Category: **Integration**
 3. Add → install → **restart Home Assistant**
 4. Settings → Devices & Services → **Add Integration** → "Haushaltsdoku"
 
@@ -48,8 +54,8 @@ template sensor that has `state_class: total_increasing` — see
 
 ```bash
 cd /config
-git clone https://github.com/yourname/haushaltsdoku
-cp -r haushaltsdoku/custom_components/haushaltsdoku custom_components/
+git clone https://github.com/Lexorius/hacs-budget-book
+cp -r hacs-budget-book/custom_components/haushaltsdoku custom_components/
 ```
 
 Then restart Home Assistant.
