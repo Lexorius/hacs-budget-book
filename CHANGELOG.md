@@ -4,6 +4,26 @@ Alle nennenswerten Änderungen werden hier dokumentiert.
 Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.12] — 2026-05-01
+
+### Geändert
+- Re-Release der Inhalte aus 0.2.11 unter neuer Versionsnummer, nachdem
+  der Tag `v0.2.11` ohne den dazugehörigen manifest-Bump auf GitHub gepusht
+  worden war. Inhaltlich identisch zu 0.2.11.
+
+## [0.2.11] — 2026-05-01
+
+### Behoben
+- **Config-Flow lädt nicht** (eigentlicher Fehler aus dem Stack-Trace):
+  `voluptuous.error.MultipleInvalid: not a valid value for dictionary
+  value @ data['step']` — `NumberSelectorConfig` validiert `step` strenger:
+  Werte müssen entweder `"any"` sein oder mindestens `0.001`. Drei
+  Stellen mit `step=0.0001` auf `step="any"` umgestellt (für Preise,
+  Step-Konfiguration und manuellen Zähler-Step).
+- `number.py` clampt `_attr_native_step` defensiv auf minimum `0.001`,
+  damit eine versehentlich zu kleine Konfigurations-Eingabe nicht zur
+  Laufzeit Folge-Validierungsfehler auslöst.
+
 ## [0.2.10] — 2026-05-01
 
 ### Behoben

@@ -66,7 +66,9 @@ class MeterInputEntity(NumberEntity):
         self._attr_name = f"{meter[CONF_METER_NAME]} (Eingabe)"
         self._attr_native_unit_of_measurement = meter.get(CONF_METER_UNIT)
         self._attr_native_max_value = float(meter.get(CONF_METER_MAX, 9_999_999))
-        self._attr_native_step = float(meter.get(CONF_METER_STEP, 0.001))
+        # HA validiert step >= 0.001 — defensiv clampen, falls in der Config
+        # versehentlich ein kleinerer Wert steht
+        self._attr_native_step = max(0.001, float(meter.get(CONF_METER_STEP, 0.001)))
 
         self._attr_device_info = {
             "identifiers": {(DOMAIN, entry.entry_id)},

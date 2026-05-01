@@ -66,7 +66,7 @@ METER_AUTO_SCHEMA = vol.Schema(
         ),
         vol.Required(CONF_METER_UNIT, default="kWh"): TextSelector(TextSelectorConfig()),
         vol.Optional(CONF_METER_PRICE): NumberSelector(
-            NumberSelectorConfig(min=0, step=0.0001, mode=NumberSelectorMode.BOX)
+            NumberSelectorConfig(min=0, step="any", mode=NumberSelectorMode.BOX)
         ),
         vol.Optional(CONF_METER_BASE_FEE): NumberSelector(
             NumberSelectorConfig(min=0, step=0.01, mode=NumberSelectorMode.BOX)
@@ -84,10 +84,10 @@ METER_MANUAL_SCHEMA = vol.Schema(
             NumberSelectorConfig(min=1, step=1, mode=NumberSelectorMode.BOX)
         ),
         vol.Optional(CONF_METER_STEP, default=0.001): NumberSelector(
-            NumberSelectorConfig(min=0.0001, step=0.0001, mode=NumberSelectorMode.BOX)
+            NumberSelectorConfig(min=0.0001, step="any", mode=NumberSelectorMode.BOX)
         ),
         vol.Optional(CONF_METER_PRICE): NumberSelector(
-            NumberSelectorConfig(min=0, step=0.0001, mode=NumberSelectorMode.BOX)
+            NumberSelectorConfig(min=0, step="any", mode=NumberSelectorMode.BOX)
         ),
         vol.Optional(CONF_METER_BASE_FEE): NumberSelector(
             NumberSelectorConfig(min=0, step=0.01, mode=NumberSelectorMode.BOX)
