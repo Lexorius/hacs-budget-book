@@ -58,16 +58,26 @@ echo "Neue Version:     $NEW"
 read -p "Fortfahren? [y/N] " -n 1 -r; echo
 [[ $REPLY =~ ^[Yy]$ ]] || { echo "Abgebrochen."; exit 0; }
 
-# manifest.json
+# manifest.json — Version setzen UND Keys sortieren (hassfest-konform)
 python3 - "$MANIFEST" "$NEW" <<'PY'
 import json, sys
+from collections import OrderedDict
+
 path, new = sys.argv[1], sys.argv[2]
 data = json.load(open(path))
 data["version"] = new
+
+# hassfest verlangt: domain, name zuerst, dann alphabetisch
+ordered = OrderedDict()
+ordered["domain"] = data.pop("domain")
+ordered["name"] = data.pop("name")
+for k in sorted(data.keys()):
+    ordered[k] = data[k]
+
 with open(path, "w") as f:
-    json.dump(data, f, indent=2, ensure_ascii=False)
+    json.dump(ordered, f, indent=2, ensure_ascii=False)
     f.write("\n")
-print(f"✓ {path} → {new}")
+print(f"✓ {path} → {new} (Keys sortiert)")
 PY
 
 # CHANGELOG

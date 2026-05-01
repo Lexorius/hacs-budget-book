@@ -4,6 +4,30 @@ Alle nennenswerten Änderungen werden hier dokumentiert.
 Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.7] — 2026-05-01
+
+### Behoben
+- HACS-Validation-Fehler `Validation topics failed` und `Validation
+  description failed`: beide Checks beziehen sich auf das GitHub-Repo
+  selbst (nicht auf den Code) und werden in der CI-Pipeline jetzt
+  ignoriert — `ignore: brands topics description`
+- Empfehlung in der README ergänzt, beide Werte direkt auf GitHub zu
+  setzen (Repo-Seite → Zahnrad neben "About")
+
+## [0.2.6] — 2026-05-01
+
+### Behoben
+- hassfest-Fehler `Manifest keys are not sorted correctly`:
+  `manifest.json` ist jetzt korrekt sortiert (`domain`, `name`, dann
+  alphabetisch — wie hassfest es verlangt)
+
+### Hinzugefügt
+- `scripts/check-manifest.sh` — lokaler Schnell-Check für Pflichtkeys und
+  Key-Reihenfolge. Wird auch im `validate.yml`-Workflow ausgeführt, damit
+  das Problem nicht erst bei hassfest in CI auffällt
+- `bump-version.sh` sortiert beim Bump die manifest-Keys automatisch
+  hassfest-konform
+
 ## [0.2.5] — 2026-05-01
 
 ### Geändert

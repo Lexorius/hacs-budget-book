@@ -282,6 +282,20 @@ On every push and PR, `validate.yml` runs:
 - **ruff** — Python style
 - **JSON/YAML lint** — manifest, services.yaml, translations
 - **Version consistency** — `manifest.json` version must appear in the CHANGELOG
+- **Manifest check** — required keys + hassfest-compatible key order
+
+### GitHub repository settings (one-time)
+
+So that HACS validation passes without needing the ignore list, set Topics
+and Description on the GitHub repo page. Click the gear icon next to
+**"About"** in the upper right of the repo page:
+
+- **Description**: short description of the integration
+- **Topics**: e.g. `home-assistant`, `hacs`, `hacs-integration`,
+  `consumption-tracking`, `energy-monitoring`
+
+Once both are set, the corresponding entries can be removed from the
+`ignore` field in `.github/workflows/validate.yml`.
 
 ## License
 

@@ -23,9 +23,13 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
-          # Custom-Repo: kein Icon im home-assistant/brands hinterlegt.
-          # Brands-Check daher überspringen.
-          ignore: brands
+          # Bei Custom-Repos die noch nicht für hacs/default applied sind:
+          # - brands:      kein Icon im home-assistant/brands hinterlegt
+          # - topics:      GitHub-Repo-Topics (auf Repo-Seite setzbar)
+          # - description: GitHub-Repo-Beschreibung (auf Repo-Seite setzbar)
+          # Sobald die drei oben erledigt sind, kann der ignore-Eintrag
+          # entsprechend gekürzt werden.
+          ignore: brands topics description
 
   python:
     name: Python checks
@@ -41,6 +45,9 @@ jobs:
 
       - name: Compile-check
         run: python -m compileall -q custom_components/
+
+      - name: Manifest-Check
+        run: ./scripts/check-manifest.sh
 
       - name: Ruff
         run: ruff check custom_components/ --select E,F,W,I --line-length 100

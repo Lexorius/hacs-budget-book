@@ -1,13 +1,13 @@
 {
   "domain": "haushaltsdoku",
   "name": "Haushaltsdoku",
-  "version": "0.2.5",
-  "documentation": "https://github.com/Lexorius/hacs-budget-book",
-  "issue_tracker": "https://github.com/Lexorius/hacs-budget-book/issues",
   "codeowners": ["@Lexorius"],
   "config_flow": true,
-  "iot_class": "calculated",
-  "integration_type": "helper",
   "dependencies": ["recorder", "http"],
-  "requirements": []
+  "documentation": "https://github.com/Lexorius/hacs-budget-book",
+  "integration_type": "helper",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/Lexorius/hacs-budget-book/issues",
+  "requirements": [],
+  "version": "0.2.7"
 }

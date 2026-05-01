@@ -318,6 +318,20 @@ Bei jedem Push und jedem PR läuft `validate.yml`:
 - **ruff** — Python-Style
 - **JSON/YAML-Lint** — manifest, services.yaml, translations
 - **Version-Consistency** — `manifest.json` muss im CHANGELOG vorkommen
+- **Manifest-Check** — Pflichtkeys + hassfest-konforme Reihenfolge
+
+### GitHub-Repo-Konfiguration (einmalig)
+
+Damit die HACS-Validation auch ohne ignore-Liste durchläuft, sollten Topics
+und Description auf der GitHub-Repo-Seite gesetzt sein. Dazu rechts oben
+neben **"About"** auf das Zahnrad klicken:
+
+- **Description**: kurze Beschreibung der Integration
+- **Topics**: z.B. `home-assistant`, `hacs`, `hacs-integration`,
+  `consumption-tracking`, `energy-monitoring`, `haushaltsbuch`
+
+Sobald beides gesetzt ist, können die entsprechenden Einträge aus dem
+`ignore`-Feld in `.github/workflows/validate.yml` entfernt werden.
 
 ## Lizenz
 
