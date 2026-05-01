@@ -1,0 +1,59 @@
+generate_monthly_report:
+  name: Monatsbericht erzeugen
+  description: Erstellt einen HTML-Monatsbericht für alle konfigurierten Zähler.
+  fields:
+    year:
+      name: Jahr
+      description: Jahr (z.B. 2026). Standard ist das aktuelle Jahr.
+      example: 2026
+      selector:
+        number:
+          min: 2000
+          max: 2100
+          mode: box
+    month:
+      name: Monat
+      description: Monat 1-12. Standard ist der aktuelle Monat.
+      example: 4
+      selector:
+        number:
+          min: 1
+          max: 12
+          mode: box
+
+generate_yearly_report:
+  name: Jahresbericht erzeugen
+  description: Erstellt einen HTML-Jahresbericht für alle konfigurierten Zähler.
+  fields:
+    year:
+      name: Jahr
+      description: Jahr (z.B. 2025). Standard ist das aktuelle Jahr.
+      example: 2025
+      selector:
+        number:
+          min: 2000
+          max: 2100
+          mode: box
+
+generate_range_report:
+  name: Bericht für Zeitraum
+  description: Erstellt einen Bericht für einen frei gewählten Zeitraum.
+  fields:
+    start:
+      name: Startzeitpunkt
+      description: Anfang des Zeitraums.
+      required: true
+      selector:
+        datetime:
+    end:
+      name: Endzeitpunkt
+      description: Ende des Zeitraums.
+      required: true
+      selector:
+        datetime:
+    title:
+      name: Titel
+      description: Optionaler Titel für den Bericht.
+      example: Urlaub Sommer 2025
+      selector:
+        text:

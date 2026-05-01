@@ -1,0 +1,85 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Haushaltsdoku",
+        "description": "Global settings for consumption reports.",
+        "data": {
+          "output_dir": "Output directory (relative to /config)",
+          "currency": "Currency",
+          "language": "Report language",
+          "auto_monthly": "Generate monthly reports automatically",
+          "auto_yearly": "Generate yearly reports automatically"
+        }
+      },
+      "add_meter": {
+        "title": "Add a meter",
+        "description": "Added so far: {count}",
+        "data": {
+          "name": "Display name",
+          "entity_id": "Sensor / input_number entity",
+          "unit": "Unit (kWh, m³, L …)",
+          "price_per_unit": "Price per unit (optional)",
+          "base_fee_monthly": "Monthly base fee (optional)",
+          "icon": "Icon / emoji (optional)",
+          "color": "Color (hex, optional)"
+        }
+      },
+      "menu": {
+        "title": "Add another meter?",
+        "description": "Configured ({count}): {names}",
+        "data": { "action": "Action" }
+      }
+    },
+    "abort": { "already_configured": "Haushaltsdoku is already set up." }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure Haushaltsdoku",
+        "description": "Current meters:\n{meters}",
+        "data": { "action": "What do you want to do?" }
+      },
+      "add_meter": {
+        "title": "Add meter",
+        "data": {
+          "name": "Display name",
+          "entity_id": "Entity",
+          "unit": "Unit",
+          "price_per_unit": "Price per unit",
+          "base_fee_monthly": "Monthly base fee",
+          "icon": "Icon / emoji",
+          "color": "Color (hex)"
+        }
+      },
+      "remove_meter": {
+        "title": "Remove meter",
+        "data": { "meter": "Which meter to remove?" }
+      },
+      "global": {
+        "title": "Global settings",
+        "data": {
+          "output_dir": "Output directory",
+          "currency": "Currency",
+          "language": "Report language",
+          "auto_monthly": "Auto-generate monthly",
+          "auto_yearly": "Auto-generate yearly"
+        }
+      }
+    }
+  },
+  "services": {
+    "generate_monthly_report": {
+      "name": "Generate monthly report",
+      "description": "Create an HTML monthly report."
+    },
+    "generate_yearly_report": {
+      "name": "Generate yearly report",
+      "description": "Create an HTML yearly report."
+    },
+    "generate_range_report": {
+      "name": "Generate range report",
+      "description": "Create a report for a custom date range."
+    }
+  }
+}
