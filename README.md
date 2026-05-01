@@ -14,6 +14,8 @@ Englisch** generierbar.
 
 **Autor:** [Lexorius](https://github.com/Lexorius) (Thomas Kloppholz)
 
+📋 Versionshistorie: siehe [CHANGELOG.md](CHANGELOG.md)
+
 ![Berichts-Beispiel](docs/screenshot.png)
 
 ## Features

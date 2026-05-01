@@ -13,6 +13,8 @@ dependencies, no JavaScript, fully self-contained.
 
 **Author:** [Lexorius](https://github.com/Lexorius) (Thomas Kloppholz)
 
+📋 Version history: see [CHANGELOG.md](CHANGELOG.md)
+
 ## Features
 
 - 📊 **HTML reports with embedded SVG charts** — printable, no JS required
