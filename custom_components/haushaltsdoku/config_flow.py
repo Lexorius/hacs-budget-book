@@ -43,7 +43,6 @@ from .const import (
     DEFAULT_OUTPUT_DIR,
     DOMAIN,
 )
-from .i18n import SUPPORTED_LANGUAGES
 
 _LOGGER = logging.getLogger(__name__)
 

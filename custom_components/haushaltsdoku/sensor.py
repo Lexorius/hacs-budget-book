@@ -23,7 +23,7 @@ from .const import (
     MANUAL_SENSOR_PREFIX,
 )
 from .coordinator import HaushaltsdokuCoordinator
-from .number import _slug
+from .helpers import slugify_name
 
 # Mapping unit → device_class (best effort)
 _DEVICE_CLASS_BY_UNIT = {
@@ -117,7 +117,7 @@ class ManualMeterSensor(SensorEntity):
         self._meter_id: str = meter["id"]
         self._meter = meter
 
-        slug = _slug(meter[CONF_METER_NAME])
+        slug = slugify_name(meter[CONF_METER_NAME])
         unit = meter.get(CONF_METER_UNIT)
 
         self._attr_unique_id = f"{entry.entry_id}_{self._meter_id}_value"

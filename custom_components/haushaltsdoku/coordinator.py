@@ -96,16 +96,31 @@ class HaushaltsdokuCoordinator:
         if end.tzinfo is None:
             end = dt_util.as_utc(end.replace(tzinfo=dt_util.DEFAULT_TIME_ZONE))
 
-        stats = await recorder.async_add_executor_job(
-            statistics_during_period,
-            self.hass,
-            start,
-            end,
-            {entity_id},
-            period,
-            None,
-            {"change", "sum", "state"},
-        )
+        # statistics_during_period: Signatur hat sich über HA-Versionen mehrfach
+        # geändert. Wir versuchen das aktuelle 7-Argument-Format und fallen
+        # auf ältere Varianten zurück.
+        try:
+            stats = await recorder.async_add_executor_job(
+                statistics_during_period,
+                self.hass, start, end, {entity_id}, period, None,
+                {"change", "sum", "state"},
+            )
+        except TypeError:
+            try:
+                stats = await recorder.async_add_executor_job(
+                    statistics_during_period,
+                    self.hass, start, end, {entity_id}, period, None,
+                    {"sum", "state"},
+                )
+            except TypeError as err:
+                _LOGGER.error(
+                    "statistics_during_period nicht aufrufbar (HA-Version "
+                    "inkompatibel?): %s", err,
+                )
+                return []
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.error("Fehler beim Abruf der Statistics: %s", err)
+            return []
 
         rows = stats.get(entity_id, [])
         result = []
@@ -113,16 +128,14 @@ class HaushaltsdokuCoordinator:
             change = row.get("change")
             if change is None:
                 change = row.get("sum") or 0
+            start_val = row["start"]
+            end_val = row["end"]
+            if isinstance(start_val, (int, float)):
+                start_val = dt_util.utc_from_timestamp(start_val)
+            if isinstance(end_val, (int, float)):
+                end_val = dt_util.utc_from_timestamp(end_val)
             result.append(
-                {
-                    "start": dt_util.utc_from_timestamp(row["start"])
-                    if isinstance(row["start"], (int, float))
-                    else row["start"],
-                    "end": dt_util.utc_from_timestamp(row["end"])
-                    if isinstance(row["end"], (int, float))
-                    else row["end"],
-                    "change": float(change),
-                }
+                {"start": start_val, "end": end_val, "change": float(change)}
             )
         return result
 

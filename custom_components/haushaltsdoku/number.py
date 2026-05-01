@@ -19,20 +19,9 @@ from .const import (
     MANUAL_SENSOR_PREFIX,
 )
 from .coordinator import HaushaltsdokuCoordinator
+from .helpers import slugify_name
 
 _LOGGER = logging.getLogger(__name__)
-
-
-def _slug(name: str) -> str:
-    return (
-        name.lower()
-        .replace(" ", "_")
-        .replace("-", "_")
-        .replace("ä", "ae")
-        .replace("ö", "oe")
-        .replace("ü", "ue")
-        .replace("ß", "ss")
-    )
 
 
 async def async_setup_entry(
@@ -70,7 +59,7 @@ class MeterInputEntity(NumberEntity):
         self._meter_id: str = meter["id"]
         self._meter = meter
 
-        slug = _slug(meter[CONF_METER_NAME])
+        slug = slugify_name(meter[CONF_METER_NAME])
         self._attr_unique_id = f"{entry.entry_id}_{self._meter_id}_input"
         # gewünschte object_id
         self.entity_id = f"number.{MANUAL_SENSOR_PREFIX}_{slug}_input"

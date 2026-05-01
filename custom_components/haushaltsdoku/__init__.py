@@ -31,6 +31,7 @@ from .const import (
     SERVICE_GENERATE_RANGE,
 )
 from .coordinator import HaushaltsdokuCoordinator
+from .helpers import slugify_name
 from .report_generator import ReportGenerator
 from .storage import ReadingStore
 
@@ -72,16 +73,8 @@ SERVICE_ADD_READING_SCHEMA = vol.Schema(
 )
 
 
-def _slug(name: str) -> str:
-    return (
-        name.lower()
-        .replace(" ", "_")
-        .replace("-", "_")
-        .replace("ä", "ae")
-        .replace("ö", "oe")
-        .replace("ü", "ue")
-        .replace("ß", "ss")
-    )
+def _slug(name: str) -> str:  # internal alias, nutzt helpers
+    return slugify_name(name)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

@@ -4,6 +4,23 @@ Alle nennenswerten Änderungen werden hier dokumentiert.
 Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.3] — 2026-05-01
+
+### Behoben
+- "Invalid handler specified" beim Laden des Config-Flows: `integration_type`
+  in `manifest.json` von `service` (Cloud-Services) auf `helper` korrigiert
+  — letzteres ist der korrekte Typ für lokal-rechnende Custom-Integrationen
+- Cross-Plattform-Import (`from .number import _slug` in `sensor.py`)
+  beseitigt; verhindert potenzielle Lade-Reihenfolge-Probleme bei HA-Setup.
+  Slugify-Logik ist jetzt in `helpers.py`
+- Defensive Behandlung der `statistics_during_period`-Signatur — fängt
+  `TypeError` bei API-Änderungen zwischen HA-Versionen ab und versucht
+  Fallback-Aufrufe statt komplett zu scheitern
+- Unbenutzter `i18n`-Import in `config_flow.py` entfernt
+
+### Geändert
+- Neues `helpers.py` Modul mit `slugify_name()` als zentraler Slug-Funktion
+
 ## [0.2.2] — 2026-05-01
 
 ### Hinzugefügt
