@@ -4,6 +4,20 @@ Alle nennenswerten Änderungen werden hier dokumentiert.
 Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.10] — 2026-05-01
+
+### Behoben
+- **Config-Flow lädt nicht** in HA 2025.x (`Exception importing
+  custom_components.haushaltsdoku.config_flow`):
+  - `FlowResult`-Import aus `homeassistant.data_entry_flow` in einen
+    `TYPE_CHECKING`-Block verschoben. In HA 2024.10+ wurde der Typ durch
+    `ConfigFlowResult` in `homeassistant.config_entries` ersetzt;
+    der alte Import bleibt als Fallback.
+  - `OptionsFlow.__init__` setzt `self.config_entry` nicht mehr selbst.
+    In HA 2025.x ist `config_entry` ein Property der `OptionsFlow`-Klasse
+    und das eigene Setzen wirft `AttributeError`. Der Wert wird vom Parent
+    automatisch befüllt.
+
 ## [0.2.9] — 2026-05-01
 
 ### Behoben

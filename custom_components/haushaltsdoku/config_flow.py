@@ -3,12 +3,11 @@ from __future__ import annotations
 
 import logging
 import uuid
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.selector import (
     EntitySelector,
     EntitySelectorConfig,
@@ -18,6 +17,14 @@ from homeassistant.helpers.selector import (
     TextSelector,
     TextSelectorConfig,
 )
+
+if TYPE_CHECKING:
+    # In HA 2024.10+ wurde FlowResult durch ConfigFlowResult ersetzt.
+    # Wir nutzen es nur für Type-Hints, Import muss zur Laufzeit nicht laden.
+    try:
+        from homeassistant.config_entries import ConfigFlowResult as FlowResult
+    except ImportError:
+        from homeassistant.data_entry_flow import FlowResult  # type: ignore[no-redef]
 
 from .const import (
     CONF_AUTO_MONTHLY,
@@ -202,7 +209,11 @@ class HaushaltsdokuOptionsFlow(OptionsFlow):
     """Options: Zähler hinzufügen / entfernen / globale Einstellungen ändern."""
 
     def __init__(self, config_entry: ConfigEntry) -> None:
-        self.config_entry = config_entry
+        # ACHTUNG: HA 2025.x: `self.config_entry = config_entry` würde
+        # AttributeError werfen, weil config_entry jetzt ein Property von
+        # OptionsFlow ist (von HA selbst gesetzt). Wir greifen einfach auf
+        # `self.config_entry` zu (vom Parent gesetzt) und brauchen den
+        # Parameter nur, weil ältere HA-Versionen ihn so übergeben.
         self._pending_manual: bool = False
         # Aktuelle Konfiguration laden
         self._meters: list[dict[str, Any]] = list(
