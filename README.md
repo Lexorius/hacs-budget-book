@@ -16,6 +16,10 @@ Englisch** generierbar.
 
 📋 Versionshistorie: siehe [CHANGELOG.md](CHANGELOG.md)
 
+[![Validate](https://github.com/Lexorius/hacs-budget-book/actions/workflows/validate.yml/badge.svg)](https://github.com/Lexorius/hacs-budget-book/actions/workflows/validate.yml)
+[![Release](https://github.com/Lexorius/hacs-budget-book/actions/workflows/release.yml/badge.svg)](https://github.com/Lexorius/hacs-budget-book/actions/workflows/release.yml)
+[![hacs](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+
 ![Berichts-Beispiel](docs/screenshot.png)
 
 ## Features
@@ -254,6 +258,53 @@ meters:
   Summary-Cards leicht ergänzbar.
 - Keine Aufschlüsselung nach Tarifen (HT/NT) — der Utility-Meter kann das,
   müsste hier durchgeschleift werden.
+
+## Entwicklung & Release
+
+### Lokal bauen
+
+```bash
+./scripts/build.sh
+```
+
+Erzeugt `dist/haushaltsdoku.zip` — exakt dasselbe Format, das auch der CI
+beim Release produziert.
+
+### Version bumpen
+
+```bash
+./scripts/bump-version.sh patch     # 0.2.1 → 0.2.2
+./scripts/bump-version.sh minor     # 0.2.1 → 0.3.0
+./scripts/bump-version.sh major     # 0.2.1 → 1.0.0
+./scripts/bump-version.sh 1.4.0     # explizit
+```
+
+Erhöht die Version in `manifest.json` und legt einen Platzhalter-Eintrag im
+`CHANGELOG.md` an (den du dann ausfüllst).
+
+### Release veröffentlichen
+
+```bash
+git tag v0.2.2
+git push origin v0.2.2
+```
+
+Der `release.yml`-Workflow läuft automatisch und
+
+1. prüft, dass `manifest.json` zum Tag passt
+2. baut `haushaltsdoku.zip` (HACS-konform, Files direkt im Root)
+3. extrahiert Release-Notes aus dem CHANGELOG-Abschnitt der Version
+4. erstellt das GitHub-Release mit dem ZIP als Asset
+
+### CI / Validation
+
+Bei jedem Push und jedem PR läuft `validate.yml`:
+
+- **hassfest** — offizielle HA-Validierung der Integration
+- **HACS-Action** — prüft HACS-Konformität
+- **ruff** — Python-Style
+- **JSON/YAML-Lint** — manifest, services.yaml, translations
+- **Version-Consistency** — `manifest.json` muss im CHANGELOG vorkommen
 
 ## Lizenz
 

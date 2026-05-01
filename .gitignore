@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+
+# Build artifacts
+dist/
+build/
+*.zip
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# HA testing
+config/
+.HA_VERSION
+home-assistant.log*
+
+# Test outputs
+/test_output/
+demo_*.html

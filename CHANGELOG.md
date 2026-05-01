@@ -4,6 +4,26 @@ Alle nennenswerten Änderungen werden hier dokumentiert.
 Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.2] — 2026-05-01
+
+### Hinzugefügt
+- GitHub-Workflow `validate.yml`: Hassfest, HACS-Validation, Python-Lint
+  (ruff), JSON/YAML-Validierung, Versions-Konsistenzcheck (manifest ↔
+  CHANGELOG)
+- GitHub-Workflow `release.yml`: bei Tag `v*` wird automatisch ein Release
+  mit `haushaltsdoku.zip` als Asset erzeugt; Release-Notes werden aus dem
+  CHANGELOG extrahiert
+- Lokales Build-Script `scripts/build.sh` mit identischem Output zum
+  CI-Build
+- Versions-Bump-Script `scripts/bump-version.sh` mit `patch`/`minor`/
+  `major`-Modi und automatischem CHANGELOG-Eintrag
+- Issue-Templates für Bug-Reports und Feature-Requests
+- `.gitignore` für Python/Build-Artefakte/IDE-Files
+
+### Geändert
+- Release-ZIP jetzt HACS-konform: Inhalt von `custom_components/haushaltsdoku/`
+  liegt direkt im ZIP-Root (statt mit `custom_components/<domain>/` Wrapper)
+
 ## [0.2.1] — 2026-05-01
 
 ### Geändert

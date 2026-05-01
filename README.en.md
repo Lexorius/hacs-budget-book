@@ -15,6 +15,10 @@ dependencies, no JavaScript, fully self-contained.
 
 📋 Version history: see [CHANGELOG.md](CHANGELOG.md)
 
+[![Validate](https://github.com/Lexorius/hacs-budget-book/actions/workflows/validate.yml/badge.svg)](https://github.com/Lexorius/hacs-budget-book/actions/workflows/validate.yml)
+[![Release](https://github.com/Lexorius/hacs-budget-book/actions/workflows/release.yml/badge.svg)](https://github.com/Lexorius/hacs-budget-book/actions/workflows/release.yml)
+[![hacs](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+
 ## Features
 
 - 📊 **HTML reports with embedded SVG charts** — printable, no JS required
@@ -219,6 +223,52 @@ Numbers are formatted according to the chosen report language:
 Date formats:
 - German: `Mo, 01.04.2026`
 - English: `Mon, 2026-04-01`
+
+## Development & Release
+
+### Local build
+
+```bash
+./scripts/build.sh
+```
+
+Produces `dist/haushaltsdoku.zip` — exact same format the CI release builds.
+
+### Bump version
+
+```bash
+./scripts/bump-version.sh patch     # 0.2.1 → 0.2.2
+./scripts/bump-version.sh minor     # 0.2.1 → 0.3.0
+./scripts/bump-version.sh major     # 0.2.1 → 1.0.0
+./scripts/bump-version.sh 1.4.0     # explicit
+```
+
+Bumps the version in `manifest.json` and creates a placeholder entry in
+`CHANGELOG.md`.
+
+### Publish a release
+
+```bash
+git tag v0.2.2
+git push origin v0.2.2
+```
+
+The `release.yml` workflow runs automatically and
+
+1. verifies that `manifest.json` matches the tag
+2. builds `haushaltsdoku.zip` (HACS-compliant, files at ZIP root)
+3. extracts release notes from the matching CHANGELOG section
+4. creates the GitHub release with the ZIP attached
+
+### CI / Validation
+
+On every push and PR, `validate.yml` runs:
+
+- **hassfest** — official HA validation
+- **HACS Action** — HACS compliance
+- **ruff** — Python style
+- **JSON/YAML lint** — manifest, services.yaml, translations
+- **Version consistency** — `manifest.json` version must appear in the CHANGELOG
 
 ## License
 
