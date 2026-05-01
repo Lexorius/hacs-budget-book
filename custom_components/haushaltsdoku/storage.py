@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any
 
+import homeassistant.util.dt as dt_util
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
-import homeassistant.util.dt as dt_util
 
 from .const import STORAGE_KEY_FMT, STORAGE_VERSION
 

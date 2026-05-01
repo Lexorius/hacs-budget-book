@@ -5,15 +5,15 @@ import logging
 from datetime import datetime
 from typing import Any, Callable
 
+import homeassistant.util.dt as dt_util
 from homeassistant.components.recorder import get_instance
 from homeassistant.components.recorder.statistics import (
     statistics_during_period,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-import homeassistant.util.dt as dt_util
 
-from .const import CONF_METERS, CONF_METER_ENTITY, CONF_METER_MANUAL
+from .const import CONF_METER_MANUAL, CONF_METERS
 from .storage import ReadingStore
 
 _LOGGER = logging.getLogger(__name__)

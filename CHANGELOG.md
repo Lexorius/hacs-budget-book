@@ -4,6 +4,36 @@ Alle nennenswerten Änderungen werden hier dokumentiert.
 Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.9] — 2026-05-01
+
+### Behoben
+- Alle 14 ruff-Errors aus `validate.yml`:
+  - **I001** (10×): Imports in `__init__.py`, `config_flow.py`,
+    `coordinator.py`, `report_generator.py`, `storage.py` durch
+    `ruff --fix` automatisch sortiert
+  - **F401** (4×): unbenutzte Imports entfernt — `homeassistant.config_entries`
+    in `config_flow.py`, `CONF_METER_ENTITY` in `coordinator.py`,
+    `CONF_METERS` in `report_generator.py`, `CONF_METER_ICON` in
+    `sensor.py`, `field` in `storage.py`
+  - **E501** (4×): zu lange Zeilen umgebrochen
+    - `i18n.py`: Footer-Strings (DE+EN) als verkettete Literale
+    - `report_generator.py`: stats-row mit jedem `<div class="stat">` auf
+      mehreren Zeilen, SVG-Tag-Attribute aufgeteilt
+
+### Geändert
+- HTML-Output durch das Aufbrechen der stats-row jetzt etwas ausführlicher
+  formatiert — semantisch identisch, optisch unverändert
+
+## [0.2.8] — 2026-05-01
+
+### Behoben
+- `Permission denied` bei `./scripts/check-manifest.sh` im CI: Workflow ruft
+  Scripts jetzt explizit über `bash scripts/...` auf — damit ist das
+  Execute-Bit egal
+- README-Hinweis ergänzt, wie das Mode-Bit persistent ins Git-Tree gesetzt
+  wird (`git update-index --chmod=+x scripts/*.sh`), damit lokales Ausführen
+  ohne `bash`-Präfix funktioniert
+
 ## [0.2.7] — 2026-05-01
 
 ### Behoben

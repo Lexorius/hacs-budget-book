@@ -47,7 +47,7 @@ jobs:
         run: python -m compileall -q custom_components/
 
       - name: Manifest-Check
-        run: ./scripts/check-manifest.sh
+        run: bash scripts/check-manifest.sh
 
       - name: Ruff
         run: ruff check custom_components/ --select E,F,W,I --line-length 100

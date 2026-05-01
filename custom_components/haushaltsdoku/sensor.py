@@ -15,7 +15,6 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
-    CONF_METER_ICON,
     CONF_METER_MANUAL,
     CONF_METER_NAME,
     CONF_METER_UNIT,

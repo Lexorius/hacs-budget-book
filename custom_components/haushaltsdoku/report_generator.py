@@ -9,14 +9,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import homeassistant.util.dt as dt_util
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-import homeassistant.util.dt as dt_util
 
 from .const import (
     CONF_CURRENCY,
     CONF_LANGUAGE,
-    CONF_METERS,
     CONF_METER_BASE_FEE,
     CONF_METER_COLOR,
     CONF_METER_ENTITY,
@@ -282,9 +281,18 @@ class ReportGenerator:
   </header>
 
   <div class="stats-row">
-    <div class="stat"><span>{t(self.lang, "total")}</span><strong>{self._fmt(total)} {unit}</strong></div>
-    <div class="stat"><span>{avg_label}</span><strong>{self._fmt(avg)} {unit}</strong></div>
-    <div class="stat"><span>{t(self.lang, "peak")}</span><strong>{max_str}</strong></div>
+    <div class="stat">
+      <span>{t(self.lang, "total")}</span>
+      <strong>{self._fmt(total)} {unit}</strong>
+    </div>
+    <div class="stat">
+      <span>{avg_label}</span>
+      <strong>{self._fmt(avg)} {unit}</strong>
+    </div>
+    <div class="stat">
+      <span>{t(self.lang, "peak")}</span>
+      <strong>{max_str}</strong>
+    </div>
     {cost_row}
   </div>
 
@@ -357,7 +365,9 @@ class ReportGenerator:
         axis_title = f"{t(self.lang, 'consumption')} ({unit})"
         return f'''
 <div class="chart-wrap">
-<svg viewBox="0 0 {width} {height}" class="chart" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{axis_title}">
+<svg viewBox="0 0 {width} {height}" class="chart"
+     xmlns="http://www.w3.org/2000/svg"
+     role="img" aria-label="{axis_title}">
   <style>
     .chart {{ font-family: inherit; width: 100%; height: auto; }}
     .grid {{ stroke: var(--grid); stroke-width: 1; }}

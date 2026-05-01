@@ -270,6 +270,15 @@ meters:
 Erzeugt `dist/haushaltsdoku.zip` — exakt dasselbe Format, das auch der CI
 beim Release produziert.
 
+> **Hinweis bei "Permission denied"**: Falls du das Repo per ZIP übernommen
+> hast, fehlt den Scripts das Execute-Bit. Einmal setzen mit:
+> ```bash
+> chmod +x scripts/*.sh
+> # und im Git-Tree persistent machen:
+> git update-index --chmod=+x scripts/*.sh
+> git commit -m "chore: make scripts executable"
+> ```
+
 ### Version bumpen
 
 ```bash

@@ -234,6 +234,15 @@ Date formats:
 
 Produces `dist/haushaltsdoku.zip` — exact same format the CI release builds.
 
+> **"Permission denied" tip**: If you took the repo from a ZIP, the scripts
+> are missing the execute bit. Set it once:
+> ```bash
+> chmod +x scripts/*.sh
+> # and persist in the Git tree:
+> git update-index --chmod=+x scripts/*.sh
+> git commit -m "chore: make scripts executable"
+> ```
+
 ### Bump version
 
 ```bash
