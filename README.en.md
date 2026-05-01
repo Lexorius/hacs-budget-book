@@ -248,15 +248,28 @@ Bumps the version in `manifest.json` and creates a placeholder entry in
 
 ### Publish a release
 
+Easiest is `--release` mode of the bump script — bump → CHANGELOG placeholder →
+pause to fill in → commit → tag → push:
+
 ```bash
-git tag v0.2.2
-git push origin v0.2.2
+./scripts/bump-version.sh patch --release
 ```
 
-The `release.yml` workflow runs automatically and
+Manual flow:
+
+```bash
+./scripts/bump-version.sh patch
+$EDITOR CHANGELOG.md
+git add custom_components/haushaltsdoku/manifest.json CHANGELOG.md
+git commit -m "chore: release v0.2.x"
+git tag v0.2.x
+git push && git push --tags
+```
+
+Either way the `release.yml` workflow then
 
 1. verifies that `manifest.json` matches the tag
-2. builds `haushaltsdoku.zip` (HACS-compliant, files at ZIP root)
+2. builds `haushaltsdoku.zip` (HACS-compliant)
 3. extracts release notes from the matching CHANGELOG section
 4. creates the GitHub release with the ZIP attached
 

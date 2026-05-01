@@ -4,6 +4,28 @@ Alle nennenswerten Änderungen werden hier dokumentiert.
 Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.5] — 2026-05-01
+
+### Geändert
+- **Release-Prozess vereinfacht und robuster gemacht**:
+  - HACS-Validation in CI ignoriert jetzt den `brands`-Check (Custom-Repo,
+    kein Icon im `home-assistant/brands` hinterlegt — gewollt)
+  - HACS-Default-Registry-Check wird ohnehin nicht ausgeführt (würde nur
+    bei einem PR im `hacs/default` Repo greifen) — keine Aktion nötig
+  - `validate.yml` umstrukturiert: drei klar getrennte Jobs (hassfest /
+    hacs / python), wöchentlicher Cron entfernt
+  - `release.yml` schlanker: weniger Schritte, identischer Output
+- `bump-version.sh` unterstützt jetzt `--release`-Flag — macht in einem
+  Rutsch Bump + Commit + Tag + Push (mit Pause zum CHANGELOG-Ausfüllen)
+
+## [0.2.4] — 2026-05-01
+
+### Behoben
+- HACS-Download schlug fehl: `zip_release: true` aus `hacs.json` entfernt.
+  Damit installiert HACS den Quellbaum direkt vom Tag — funktioniert auch
+  ohne erfolgreichen Release-Workflow. (Wer Release-Assets bevorzugt,
+  kann später beide Felder wieder reinnehmen.)
+
 ## [0.2.3] — 2026-05-01
 
 ### Behoben

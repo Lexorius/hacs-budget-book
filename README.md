@@ -284,16 +284,29 @@ Erhöht die Version in `manifest.json` und legt einen Platzhalter-Eintrag im
 
 ### Release veröffentlichen
 
+Der einfachste Weg ist die `--release`-Variante des Bump-Scripts. Sie macht
+Bump → CHANGELOG-Platzhalter → kurze Pause zum Ausfüllen → Commit → Tag → Push:
+
 ```bash
-git tag v0.2.2
-git push origin v0.2.2
+./scripts/bump-version.sh patch --release
 ```
 
-Der `release.yml`-Workflow läuft automatisch und
+Manuell geht's natürlich auch:
+
+```bash
+./scripts/bump-version.sh patch
+$EDITOR CHANGELOG.md
+git add custom_components/haushaltsdoku/manifest.json CHANGELOG.md
+git commit -m "chore: release v0.2.x"
+git tag v0.2.x
+git push && git push --tags
+```
+
+In beiden Fällen läuft danach automatisch der `release.yml`-Workflow und
 
 1. prüft, dass `manifest.json` zum Tag passt
-2. baut `haushaltsdoku.zip` (HACS-konform, Files direkt im Root)
-3. extrahiert Release-Notes aus dem CHANGELOG-Abschnitt der Version
+2. baut `haushaltsdoku.zip` (HACS-konform)
+3. extrahiert die Release-Notes aus dem CHANGELOG-Abschnitt der Version
 4. erstellt das GitHub-Release mit dem ZIP als Asset
 
 ### CI / Validation

@@ -1,21 +1,29 @@
 #!/usr/bin/env bash
 # Bump die Version und legt einen CHANGELOG-Eintrag an.
+#
 # Usage:
-#   ./scripts/bump-version.sh patch     # 0.2.1 → 0.2.2
-#   ./scripts/bump-version.sh minor     # 0.2.1 → 0.3.0
-#   ./scripts/bump-version.sh major     # 0.2.1 → 1.0.0
-#   ./scripts/bump-version.sh 0.5.7     # explizit
+#   ./scripts/bump-version.sh patch              # 0.2.4 → 0.2.5
+#   ./scripts/bump-version.sh minor              # 0.2.4 → 0.3.0
+#   ./scripts/bump-version.sh major              # 0.2.4 → 1.0.0
+#   ./scripts/bump-version.sh 0.5.7              # explizite Version
+#
+#   Mit --release am Ende: macht zusätzlich Commit, Tag und Push.
+#   ./scripts/bump-version.sh patch --release
 set -euo pipefail
-
 cd "$(dirname "$0")/.."
 
 MANIFEST="custom_components/haushaltsdoku/manifest.json"
 CHANGELOG="CHANGELOG.md"
 
 if [ $# -lt 1 ]; then
-  echo "Usage: $0 {patch|minor|major|<x.y.z>}" >&2
+  echo "Usage: $0 {patch|minor|major|<x.y.z>} [--release]" >&2
   exit 1
 fi
+
+DO_RELEASE=0
+for arg in "$@"; do
+  [ "$arg" = "--release" ] && DO_RELEASE=1
+done
 
 CURRENT=$(python3 -c "import json; print(json.load(open('${MANIFEST}'))['version'])")
 echo "Aktuelle Version: $CURRENT"
@@ -25,19 +33,14 @@ case "$1" in
     NEW=$(python3 - "$CURRENT" "$1" <<'PY'
 import sys
 cur, kind = sys.argv[1], sys.argv[2]
-parts = [int(p) for p in cur.split(".")]
-while len(parts) < 3:
-    parts.append(0)
+parts = [int(p) for p in cur.split(".")] + [0, 0]
 major, minor, patch = parts[:3]
 if kind == "patch":
     patch += 1
 elif kind == "minor":
-    minor += 1
-    patch = 0
+    minor += 1; patch = 0
 elif kind == "major":
-    major += 1
-    minor = 0
-    patch = 0
+    major += 1; minor = 0; patch = 0
 print(f"{major}.{minor}.{patch}")
 PY
 )
@@ -52,11 +55,10 @@ PY
 esac
 
 echo "Neue Version:     $NEW"
-read -p "Fortfahren? [y/N] " -n 1 -r
-echo
+read -p "Fortfahren? [y/N] " -n 1 -r; echo
 [[ $REPLY =~ ^[Yy]$ ]] || { echo "Abgebrochen."; exit 0; }
 
-# manifest.json updaten
+# manifest.json
 python3 - "$MANIFEST" "$NEW" <<'PY'
 import json, sys
 path, new = sys.argv[1], sys.argv[2]
@@ -68,13 +70,13 @@ with open(path, "w") as f:
 print(f"✓ {path} → {new}")
 PY
 
-# CHANGELOG-Eintrag vorne einfügen (nach dem Header)
+# CHANGELOG
 TODAY=$(date +%Y-%m-%d)
 python3 - "$CHANGELOG" "$NEW" "$TODAY" <<'PY'
 import sys, re
 path, ver, today = sys.argv[1], sys.argv[2], sys.argv[3]
 text = open(path).read()
-new_section = f"""## [{ver}] — {today}
+section = f"""## [{ver}] — {today}
 
 ### Hinzugefügt
 - _todo_
@@ -82,25 +84,35 @@ new_section = f"""## [{ver}] — {today}
 ### Geändert
 - _todo_
 
-### Entfernt
+### Behoben
 - _todo_
 
 """
-# Einfügen vor erster "## ["
-pattern = re.compile(r"^## \[", re.M)
-m = pattern.search(text)
-if m:
-    out = text[:m.start()] + new_section + text[m.start():]
-else:
-    out = text + "\n" + new_section
+m = re.search(r"^## \[", text, re.M)
+out = (text[:m.start()] + section + text[m.start():]) if m else (text + "\n" + section)
 open(path, "w").write(out)
 print(f"✓ {path} um Sektion [{ver}] erweitert")
 PY
 
-echo
-echo "→ Trage deine Änderungen unter '## [$NEW]' im CHANGELOG nach."
-echo "→ Commit + Tag:"
-echo "    git add ${MANIFEST} ${CHANGELOG}"
-echo "    git commit -m \"chore: release v${NEW}\""
-echo "    git tag v${NEW}"
-echo "    git push && git push --tags"
+if [ "$DO_RELEASE" = "1" ]; then
+  echo
+  echo "── Bitte CHANGELOG-Platzhalter jetzt ausfüllen ──"
+  read -p "Fertig? Drücke Enter um Commit + Tag + Push auszulösen…"
+
+  git add "$MANIFEST" "$CHANGELOG"
+  git commit -m "chore: release v${NEW}"
+  git tag "v${NEW}"
+  git push
+  git push --tags
+  echo
+  echo "✓ v${NEW} gepusht. release.yml sollte jetzt laufen:"
+  echo "  https://github.com/Lexorius/hacs-budget-book/actions"
+else
+  echo
+  echo "→ Trage die Änderungen unter '## [$NEW]' im CHANGELOG nach."
+  echo "→ Dann manuell:"
+  echo "    git add ${MANIFEST} ${CHANGELOG}"
+  echo "    git commit -m \"chore: release v${NEW}\""
+  echo "    git tag v${NEW}"
+  echo "    git push && git push --tags"
+fi
